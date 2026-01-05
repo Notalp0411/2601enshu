@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>model-viewer AR表示</title>
+
+  <!-- model-viewerをCDNから読み込み -->
+  <script type="module"
+    src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+  </script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #f0f0f0;
+    }
+
+    model-viewer {
+      width: 100vw;
+      height: 100vh;
+      background: #ffffff;
+    }
+
+    /* ARボタン */
+    #ar-button {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* プログレスバー */
+    .progress-bar {
+      display: block;
+      width: 50%;
+      height: 6px;
+      margin: 10px auto;
+      background: #ddd;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar.hide {
+      display: none;
+    }
+
+    .update-bar {
+      height: 100%;
+      width: 0%;
+      background: #1976d2;
+    }
+
+    /* AR操作ガイド */
+    #ar-prompt {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #ar-prompt img {
+      width: 48px;
+      opacity: 0.8;
+    }
+    #ar-prompt {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  #ar-prompt {
+    display: block;
+  }
+}
+
+  </style>
+</head>
+
+<body>
+
+  <model-viewer
+  src="./sozai1.glb"
+  ar
+  ar-modes="webxr scene-viewer quick-look"
+  camera-controls
+  tone-mapping="neutral"
+  shadow-intensity="1">
+
+
+    <!-- 読み込み中プログレス -->
+    <div class="progress-bar hide" slot="progress-bar">
+      <div class="update-bar"></div>
+    </div>
+
+    <!-- AR起動ボタン -->
+    <button slot="ar-button" id="ar-button">
+      あなたのスペースで見る
+    </button>
+
+    <!-- AR操作ヒント -->
+    <div id="ar-prompt">
+      <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
+    </div>
+
+  </model-viewer>
+
+</body>
+</html>
