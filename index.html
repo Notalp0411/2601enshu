@@ -2,109 +2,557 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>model-viewer AR表示</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模擬店MAP | 第6回 富山国際大学＆富山短期大学 合同大学祭 Canvas of Bloom</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- model-viewerをCDNから読み込み -->
-  <script type="module"
-    src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bloom: {
+              cream: '#FDFBF7',
+              bg: '#FAF5EF',
+              card: '#FFFFFF',
+              pink: '#E87A90',
+              pinkSoft: '#FCD8E0',
+              yellow: '#F5C542',
+              yellowSoft: '#FEF3C7',
+              green: '#81B29A',
+              greenSoft: '#E8F3EE',
+              terracotta: '#E07A5F',
+              terracottaSoft: '#FBEBE6',
+              text: '#3D405B',
+              textLight: '#6C757D',
+            }
+          },
+          fontFamily: {
+            rounded: ['"Zen Maru Gothic"', '"M PLUS Rounded 1c"', 'sans-serif'],
+            accent: ['"Kiwi Maru"', 'serif'],
+          }
+        }
+      }
+    }
   </script>
 
   <style>
     body {
-      margin: 0;
-      background: #f0f0f0;
+      background-color: #FAF5EF;
+      color: #3D405B;
+      font-family: 'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif;
     }
-
-    model-viewer {
-      width: 100vw;
-      height: 100vh;
-      background: #ffffff;
+    .watermark-flower {
+      background-image: radial-gradient(#E87A90 0.75px, transparent 0.75px);
+      background-size: 24px 24px;
+      opacity: 0.15;
     }
-
-    /* ARボタン */
-    #ar-button {
-      background: #1976d2;
-      color: white;
-      border: none;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
+    .booth-pin {
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-
-    /* プログレスバー */
-    .progress-bar {
-      display: block;
-      width: 50%;
+    .booth-pin:hover, .booth-pin.active {
+      transform: scale(1.25) translateY(-4px);
+      z-index: 40;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
       height: 6px;
-      margin: 10px auto;
-      background: #ddd;
-      border-radius: 3px;
-      overflow: hidden;
     }
-
-    .progress-bar.hide {
-      display: none;
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #FAF5EF;
+      border-radius: 10px;
     }
-
-    .update-bar {
-      height: 100%;
-      width: 0%;
-      background: #1976d2;
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #E87A90;
+      border-radius: 10px;
     }
-
-    /* AR操作ガイド */
-    #ar-prompt {
-      position: absolute;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    #ar-prompt img {
-      width: 48px;
-      opacity: 0.8;
-    }
-    #ar-prompt {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  #ar-prompt {
-    display: block;
-  }
-}
-
   </style>
 </head>
+<body class="min-h-screen relative pb-16 selection:bg-bloom-pinkSoft selection:text-bloom-pink">
 
-<body>
+  <!-- Background Decorative Shapes -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+    <div class="absolute -top-10 -left-10 w-72 h-72 rounded-full bg-bloom-pinkSoft/40 blur-3xl"></div>
+    <div class="absolute top-1/3 -right-20 w-96 h-96 rounded-full bg-bloom-yellowSoft/60 blur-3xl"></div>
+    <div class="absolute bottom-10 left-10 w-80 h-80 rounded-full bg-bloom-greenSoft/50 blur-3xl"></div>
+  </div>
 
-  <model-viewer
-  src="./sozai1.glb"
-  ar
-  ar-modes="webxr scene-viewer quick-look"
-  camera-controls
-  tone-mapping="neutral"
-  shadow-intensity="1">
+  <!-- Header Section -->
+  <header class="relative bg-white/80 backdrop-blur-md border-b border-bloom-pinkSoft/50 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+      
+      <div class="flex items-center gap-3 text-center md:text-left">
+        <!-- Flower Icon Motif -->
+        <div class="w-12 h-12 rounded-2xl bg-bloom-pinkSoft/60 flex items-center justify-center shrink-0 text-bloom-pink">
+          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2C13.5 4.5 15 7 12 11C9 7 10.5 4.5 12 2Z" fill="#E87A90" stroke="#E87A90"/>
+            <path d="M7 6C9.5 7.5 12 9 11 13C7 10 5.5 8.5 7 6Z" fill="#F5C542" stroke="#F5C542"/>
+            <path d="M17 6C18.5 8.5 17 10 13 13C12 9 14.5 7.5 17 6Z" fill="#81B29A" stroke="#81B29A"/>
+            <path d="M12 11V22" stroke="#81B29A" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-bloom-pinkSoft text-bloom-pink mb-0.5">
+            第6回 富山国際大学＆富山短期大学 合同大学祭
+          </div>
+          <h1 class="text-xl md:text-2xl font-black tracking-tight text-bloom-text flex items-center gap-2 justify-center md:justify-start">
+            <span>Canvas of Bloom</span>
+            <span class="text-bloom-pink font-accent text-lg font-normal">模擬店MAP</span>
+          </h1>
+        </div>
+      </div>
 
+      <!-- Time Schedule Badge -->
+      <div class="flex items-center gap-2 bg-bloom-bg px-4 py-2 rounded-2xl border border-bloom-yellow/30 text-xs md:text-sm">
+        <i class="fa-regular fa-clock text-bloom-terracotta text-base"></i>
+        <div>
+          <div class="font-bold text-bloom-text">模擬店開催時間</div>
+          <div class="text-bloom-textLight">
+            <span class="font-semibold text-bloom-text">17日(土)</span> 9:40～16:00 <span class="mx-1">|</span> 
+            <span class="font-semibold text-bloom-text">18日(日)</span> 10:00～15:00
+          </div>
+        </div>
+      </div>
 
-    <!-- 読み込み中プログレス -->
-    <div class="progress-bar hide" slot="progress-bar">
-      <div class="update-bar"></div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 pt-6 space-y-6">
+
+    <!-- Hero / Banner Message -->
+    <div class="bg-gradient-to-r from-bloom-pinkSoft/40 via-bloom-yellowSoft/40 to-bloom-greenSoft/40 rounded-3xl p-5 border border-white/60 shadow-sm relative overflow-hidden">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
+        <div class="space-y-1 text-center sm:text-left">
+          <span class="font-accent text-bloom-pink text-sm font-semibold">Welcome to our Food & Food Stalls!</span>
+          <h2 class="text-lg sm:text-xl font-bold text-bloom-text">それぞれの色で咲き誇る、美味しい模擬店が大集合！</h2>
+          <p class="text-xs sm:text-sm text-bloom-textLight">マップのピンまたは下部リストをタップして詳細をチェックできます。</p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="filterSchedule('all')" id="btn-all" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm bg-bloom-pink text-white">すべて</button>
+          <button onclick="filterSchedule('17')" id="btn-17" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-bloom-text hover:bg-bloom-pinkSoft transition shadow-sm">17日(土)</button>
+          <button onclick="filterSchedule('18')" id="btn-18" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-bloom-text hover:bg-bloom-pinkSoft transition shadow-sm">18日(日)</button>
+        </div>
+      </div>
     </div>
 
-    <!-- AR起動ボタン -->
-    <button slot="ar-button" id="ar-button">
-      あなたのスペースで見る
-    </button>
+    <!-- Map & Side Detail Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- AR操作ヒント -->
-    <div id="ar-prompt">
-      <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
+      <!-- Map Graphic Area (Lg: 8 cols) -->
+      <div class="lg:col-span-8 bg-white rounded-3xl p-4 sm:p-6 shadow-md border border-bloom-pinkSoft/30 relative flex flex-col">
+        
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-bloom-text flex items-center gap-2">
+            <i class="fa-solid fa-map-location-dot text-bloom-pink"></i>
+            <span>キャンパスマップ＆模擬店配置</span>
+          </h3>
+          <!-- Legend / Compass -->
+          <div class="flex items-center gap-3 text-xs text-bloom-textLight bg-bloom-bg px-3 py-1.5 rounded-full border border-bloom-pinkSoft/40">
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-bloom-pink inline-block"></span>模擬店(1~22)</span>
+            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-bloom-yellow inline-block"></span>キッチンカー</span>
+            <span class="flex items-center gap-1"><i class="fa-solid fa-compass text-bloom-text"></i> N</span>
+          </div>
+        </div>
+
+        <!-- Campus Visual Map Container -->
+        <div class="relative w-full bg-[#F4F1EA] rounded-2xl border-2 border-dashed border-bloom-pinkSoft/60 p-4 sm:p-6 min-h-[420px] sm:min-h-[500px] flex flex-col justify-between overflow-hidden select-none">
+          
+          <!-- Background Campus Elements -->
+          <!-- Compass Rose Graphic -->
+          <div class="absolute top-4 right-4 opacity-20 pointer-events-none">
+            <svg class="w-16 h-16" viewBox="0 0 100 100">
+              <polygon points="50,5 60,40 95,50 60,60 50,95 40,60 5,50 40,40" fill="#3D405B"/>
+              <text x="50" y="18" text-anchor="middle" font-weight="bold" fill="#3D405B" font-size="12">N</text>
+            </svg>
+          </div>
+
+          <!-- TOP BUILDINGS -->
+          <div class="grid grid-cols-12 gap-2 mb-4 relative z-10">
+            <!-- F館 -->
+            <div class="col-span-3 bg-bloom-greenSoft/80 border border-bloom-green/40 rounded-xl p-2 text-center shadow-sm">
+              <span class="block text-xs font-bold text-bloom-green">F館</span>
+            </div>
+            <!-- E館 -->
+            <div class="col-span-4 bg-bloom-terracottaSoft/80 border border-bloom-terracotta/40 rounded-xl p-2 text-center shadow-sm relative">
+              <span class="block text-xs font-bold text-bloom-terracotta">E館</span>
+              <!-- Booth 22 (すみりー - E館電源) -->
+              <div class="absolute -bottom-3 right-2">
+                <button onclick="selectBooth(22)" id="pin-22" class="booth-pin w-7 h-7 rounded-full bg-bloom-pink text-white text-xs font-bold shadow-md border-2 border-white flex items-center justify-center">22</button>
+              </div>
+            </div>
+            <!-- G館 / 高校生ホール -->
+            <div class="col-span-5 bg-bloom-yellowSoft/80 border border-bloom-yellow/60 rounded-xl p-2 text-center shadow-sm relative">
+              <span class="block text-xs font-bold text-bloom-text">⑦ G館（高校生ホール）</span>
+              <!-- Booth 21 (茶道 - G館電源) -->
+              <div class="absolute -bottom-3 left-3">
+                <button onclick="selectBooth(21)" id="pin-21" class="booth-pin w-7 h-7 rounded-full bg-bloom-pink text-white text-xs font-bold shadow-md border-2 border-white flex items-center justify-center">21</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MIDDLE ZONE: Plaza / Kitchen Cars & Generator -->
+          <div class="my-3 py-3 px-4 bg-white/60 rounded-2xl border border-white flex flex-wrap items-center justify-between gap-2 relative z-10">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 bg-bloom-yellow text-bloom-text text-xs font-bold rounded-lg shadow-sm flex items-center gap-1">
+                <i class="fa-solid fa-truck-front"></i> キッチンカーエリア
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-gray-200 text-gray-700 text-xs font-semibold rounded flex items-center gap-1">
+                <i class="fa-solid fa-bolt text-yellow-600"></i> 発電機
+              </span>
+              <span class="text-[11px] text-bloom-textLight">中央広場</span>
+            </div>
+          </div>
+
+          <!-- BOOTHS ROW 1 (1 ~ 10) -->
+          <div class="my-2 bg-bloom-pinkSoft/30 p-2.5 rounded-2xl border border-bloom-pinkSoft/50 relative z-10">
+            <div class="text-[11px] font-bold text-bloom-pink mb-1.5 flex items-center justify-between px-1">
+              <span><i class="fa-solid fa-store"></i> 模擬店エリア (1 ～ 10)</span>
+              <span class="text-[10px] text-bloom-textLight">A館前・広場沿い</span>
+            </div>
+            <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+              <!-- Booths 1-10 -->
+              <script>
+                for(let i=1; i<=10; i++){
+                  document.write(`
+                    <button onclick="selectBooth(${i})" id="pin-${i}" class="booth-pin py-1.5 rounded-xl bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow border border-bloom-pinkSoft flex flex-col items-center justify-center transition">
+                      <span class="text-[9px] opacity-60">#</span>${i}
+                    </button>
+                  `);
+                }
+              </script>
+            </div>
+          </div>
+
+          <!-- BOOTHS ROW 2 (11 ~ 20 Parallel Rows) -->
+          <div class="my-2 bg-bloom-greenSoft/30 p-2.5 rounded-2xl border border-bloom-greenSoft/50 relative z-10">
+            <div class="text-[11px] font-bold text-bloom-green mb-1.5 flex items-center justify-between px-1">
+              <span><i class="fa-solid fa-store"></i> 模擬店エリア (11 ～ 20)</span>
+              <span class="text-[10px] text-bloom-textLight">対面配置エリア</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+              <!-- North side row: 11, 13, 15, 17, 19 -->
+              <div class="space-y-1">
+                <div class="text-[9px] font-semibold text-bloom-textLight text-center">北側通り</div>
+                <div class="grid grid-cols-5 gap-1">
+                  <button onclick="selectBooth(11)" id="pin-11" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">11</button>
+                  <button onclick="selectBooth(13)" id="pin-13" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">13</button>
+                  <button onclick="selectBooth(15)" id="pin-15" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">15</button>
+                  <button onclick="selectBooth(17)" id="pin-17" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">17</button>
+                  <button onclick="selectBooth(19)" id="pin-19" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">19</button>
+                </div>
+              </div>
+
+              <!-- South side row: 12, 14, 16, 18, 20 -->
+              <div class="space-y-1">
+                <div class="text-[9px] font-semibold text-bloom-textLight text-center">南側通り</div>
+                <div class="grid grid-cols-5 gap-1">
+                  <button onclick="selectBooth(12)" id="pin-12" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">12</button>
+                  <button onclick="selectBooth(14)" id="pin-14" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">14</button>
+                  <button onclick="selectBooth(16)" id="pin-16" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">16</button>
+                  <button onclick="selectBooth(18)" id="pin-18" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">18</button>
+                  <button onclick="selectBooth(20)" id="pin-20" class="booth-pin py-1 rounded-lg bg-white hover:bg-bloom-pink hover:text-white text-bloom-text text-xs font-bold shadow-sm border border-bloom-green/30">20</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTTOM BUILDINGS -->
+          <div class="grid grid-cols-12 gap-2 mt-3 relative z-10">
+            <!-- A館 -->
+            <div class="col-span-8 bg-bloom-pinkSoft/80 border border-bloom-pink/40 rounded-xl p-2.5 text-center shadow-sm">
+              <span class="block text-xs font-bold text-bloom-pink">A館</span>
+            </div>
+            <!-- 付属高校 -->
+            <div class="col-span-4 bg-gray-200/80 border border-gray-300 rounded-xl p-2.5 text-center shadow-sm">
+              <span class="block text-xs font-bold text-gray-600">付属高校</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Selected Booth Detail Card (Lg: 4 cols) -->
+      <div class="lg:col-span-4 flex flex-col">
+        <div class="bg-white rounded-3xl p-5 shadow-md border border-bloom-pinkSoft/40 h-full flex flex-col justify-between" id="booth-detail-card">
+          <!-- Content populated via JS -->
+          <div id="detail-content" class="space-y-4">
+            <!-- Default Placeholder -->
+            <div class="text-center py-10 space-y-3">
+              <div class="w-16 h-16 bg-bloom-pinkSoft/50 text-bloom-pink rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-utensils"></i>
+              </div>
+              <p class="font-bold text-bloom-text text-base">店舗を選択してください</p>
+              <p class="text-xs text-bloom-textLight">マップ上の番号（1〜22）をタップすると、メニューや店舗詳細が表示されます。</p>
+            </div>
+          </div>
+
+          <!-- Quick Navigation Notice -->
+          <div class="mt-4 pt-4 border-t border-gray-100 text-center">
+            <span class="text-[11px] text-bloom-textLight inline-flex items-center gap-1">
+              <i class="fa-solid fa-circle-info text-bloom-terracotta"></i> 電源設備・特記事項もカードで確認できます
+            </span>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-  </model-viewer>
+    <!-- Search & Filter Controls -->
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-bloom-pinkSoft/30 space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-bloom-textLight"></i>
+          <input type="text" id="search-input" oninput="handleSearch()" placeholder="メニュー・団体名・番号で検索（例: ドリンク, 焼き鳥, 1-2）" class="w-full pl-11 pr-4 py-2.5 rounded-2xl bg-bloom-bg border border-bloom-pinkSoft/50 text-sm focus:outline-none focus:ring-2 focus:ring-bloom-pink/50">
+        </div>
 
+        <!-- Tag Filters -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 custom-scrollbar text-xs shrink-0">
+          <button onclick="filterCategory('all')" class="cat-btn px-3 py-1.5 rounded-full font-bold bg-bloom-text text-white">すべて</button>
+          <button onclick="filterCategory('drink')" class="cat-btn px-3 py-1.5 rounded-full font-bold bg-bloom-bg text-bloom-text hover:bg-bloom-pinkSoft">🍹 ドリンク</button>
+          <button onclick="filterCategory('sweets')" class="cat-btn px-3 py-1.5 rounded-full font-bold bg-bloom-bg text-bloom-text hover:bg-bloom-pinkSoft">🍰 スイーツ</button>
+          <button onclick="filterCategory('food')" class="cat-btn px-3 py-1.5 rounded-full font-bold bg-bloom-bg text-bloom-text hover:bg-bloom-pinkSoft">🍖 がっつり飯</button>
+          <button onclick="filterCategory('snack')" class="cat-btn px-3 py-1.5 rounded-full font-bold bg-bloom-bg text-bloom-text hover:bg-bloom-pinkSoft">🍿 スナック</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Full Booth List Section -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between px-2">
+        <h3 class="font-bold text-lg text-bloom-text flex items-center gap-2">
+          <i class="fa-solid fa-store text-bloom-pink"></i>
+          <span>模擬店一覧（全22店舗）</span>
+        </h3>
+        <span id="booth-count-badge" class="text-xs px-3 py-1 bg-bloom-pinkSoft text-bloom-pink font-bold rounded-full">22店舗表示中</span>
+      </div>
+
+      <!-- Booth Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="booth-grid">
+        <!-- JS rendered cards -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="max-w-6xl mx-auto px-4 mt-12 text-center text-xs text-bloom-textLight space-y-2">
+    <div class="w-12 h-0.5 bg-bloom-pinkSoft mx-auto rounded-full mb-4"></div>
+    <p class="font-accent text-sm text-bloom-pink font-bold">Canvas of Bloom — 第6回 富山国際大学＆富山短期大学 合同大学祭</p>
+    <p>© 2026 富山国際大学・富山短期大学 大学祭実行委員会</p>
+  </footer>
+
+  <!-- DATA & JAVASCRIPT LOGIC -->
+  <script>
+    const boothData = [
+      { id: 1, name: "3年女子①", menu: "おしゃカフェドリンク", category: "drink", power: "電源2個", day: "both", icon: "fa-mug-hot", tag: "ドリンク" },
+      { id: 2, name: "3年女子②", menu: "アサイー × 甘いフード", category: "sweets", power: "電源2個", day: "both", icon: "fa-bowl-food", tag: "アサイー・フード" },
+      { id: 3, name: "金・松山", menu: "ポップコーン・スープ", category: "snack", power: "電源3個", day: "both", icon: "fa-popcorn", tag: "ポップコーン・スープ" },
+      { id: 4, name: "竹田・佐部利", menu: "肉まん", category: "food", power: "電源2個", day: "both", icon: "fa-cloud", tag: "肉まん" },
+      { id: 5, name: "石黒・彼谷", menu: "給食デザート", category: "sweets", power: "なし", day: "both", icon: "fa-ice-cream", tag: "デザート" },
+      { id: 6, name: "1-2", menu: "スムージー", category: "drink", power: "なし", day: "both", icon: "fa-blender", tag: "スムージー" },
+      { id: 7, name: "2-1", menu: "焼き菓子", category: "sweets", power: "なし", day: "both", icon: "fa-cookie", tag: "焼き菓子" },
+      { id: 8, name: "1-5", menu: "ジュース", category: "drink", power: "なし", day: "both", icon: "fa-glass-water", tag: "ジュース" },
+      { id: 9, name: "ミカヅキ", menu: "クレープ（早川）", category: "sweets", power: "電源2個", day: "both", icon: "fa-stroopwafel", tag: "クレープ" },
+      { id: 10, name: "吉崎・大平・金子", menu: "ホットク", category: "sweets", power: "電源3個", day: "both", icon: "fa-pancake", tag: "ホットク" },
+      { id: 11, name: "リス", menu: "焼き鳥・ライスバーガー", category: "food", power: "電源3個", day: "both", icon: "fa-drumstick-bite", tag: "焼き鳥・ご飯物" },
+      { id: 12, name: "岩崎・石倉", menu: "ワッフル", category: "sweets", power: "電源3個", day: "both", icon: "fa-waffle-cone", tag: "ワッフル" },
+      { id: 13, name: "塩見 ポプラ", menu: "17日: 焼き鳥(電源2個) / 18日: お菓子のつかみ取り", category: "food", power: "電源2個", day: "both", note: "日替わりメニュー", icon: "fa-gift", tag: "焼き鳥/お菓子" },
+      { id: 14, name: "東黒牧", menu: "ホットサンド・ゼリー入りドリンク", category: "food", power: "電源2個", day: "both", icon: "fa-bread-slice", tag: "ホットサンド" },
+      { id: 15, name: "本江・相山", menu: "あんばやし", category: "snack", power: "電源2個", day: "both", icon: "fa-utensils", tag: "あんばやし" },
+      { id: 16, name: "健福", menu: "小籠包", category: "food", power: "電源2個", day: "both", icon: "fa-dump-ster", tag: "小籠包" },
+      { id: 17, name: "2-2", menu: "チュロス", category: "sweets", power: "電源2個", day: "both", icon: "fa-wand-magic-sparkles", tag: "チュロス" },
+      { id: 18, name: "1-6", menu: "たこ焼き", category: "food", power: "電源2個", day: "both", icon: "fa-circle-dot", tag: "たこ焼き" },
+      { id: 19, name: "Key Sey Jump", menu: "唐揚げ・フライドポテト", category: "food", power: "電源3個", day: "both", icon: "fa-burger", tag: "唐揚げ・ポテト" },
+      { id: 20, name: "駄菓嶋", menu: "綿菓子", category: "sweets", power: "電源1個", day: "both", icon: "fa-cloud-sun", tag: "綿菓子" },
+      { id: 21, name: "茶道", menu: "お茶", category: "drink", power: "G館電源", day: "both", note: "G館（高校生ホール）内", icon: "fa-mortar-pestle", tag: "お茶" },
+      { id: 22, name: "すみりー", menu: "フルーツポンチ・アメリカンドック・弁当", category: "food", power: "E館電源", day: "17", note: "【17日のみ開催】", icon: "fa-box-tissue", tag: "限定弁当・軽食" }
+    ];
+
+    let currentScheduleFilter = 'all';
+    let currentCategoryFilter = 'all';
+    let currentSearchText = '';
+    let selectedBoothId = null;
+
+    // Render Booth Grid Cards
+    function renderCards() {
+      const grid = document.getElementById('booth-grid');
+      grid.innerHTML = '';
+
+      const filtered = boothData.filter(booth => {
+        // Schedule filter
+        if (currentScheduleFilter === '17' && booth.day === '18') return false;
+        if (currentScheduleFilter === '18' && booth.day === '17') return false;
+
+        // Category filter
+        if (currentCategoryFilter !== 'all' && booth.category !== currentCategoryFilter) return false;
+
+        // Search text
+        if (currentSearchText.trim() !== '') {
+          const q = currentSearchText.toLowerCase();
+          const matchName = booth.name.toLowerCase().includes(q);
+          const matchMenu = booth.menu.toLowerCase().includes(q);
+          const matchId = booth.id.toString() === q;
+          const matchTag = booth.tag.toLowerCase().includes(q);
+          if (!matchName && !matchMenu && !matchId && !matchTag) return false;
+        }
+
+        return true;
+      });
+
+      document.getElementById('booth-count-badge').textContent = `${filtered.length}店舗表示中`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-white rounded-3xl border border-dashed border-bloom-pinkSoft">
+            <i class="fa-solid fa-store-slash text-3xl text-bloom-pinkSoft mb-2"></i>
+            <p class="font-bold text-bloom-text">該当する模擬店が見つかりませんでした</p>
+            <p class="text-xs text-bloom-textLight mt-1">検索キーワードやフィルターを変更してお試しください。</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(booth => {
+        const isSelected = selectedBoothId === booth.id;
+        const dayBadge = booth.day === '17' 
+          ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-bloom-terracotta text-white">17日限定</span>` 
+          : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-bloom-greenSoft text-bloom-green">両日開催</span>`;
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-2xl p-4 shadow-sm border transition hover:shadow-md cursor-pointer flex flex-col justify-between ${
+          isSelected ? 'ring-2 ring-bloom-pink border-bloom-pink bg-bloom-pinkSoft/10' : 'border-bloom-pinkSoft/30 hover:border-bloom-pink'
+        }`;
+        card.onclick = () => selectBooth(booth.id);
+
+        card.innerHTML = `
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="w-7 h-7 rounded-full bg-bloom-pink text-white text-xs font-bold flex items-center justify-center">${booth.id}</span>
+              ${dayBadge}
+            </div>
+            <div>
+              <span class="text-xs text-bloom-textLight font-semibold">${booth.name}</span>
+              <h4 class="font-bold text-bloom-text text-base leading-snug">${booth.menu}</h4>
+            </div>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-bloom-textLight">
+            <span class="inline-flex items-center gap-1 bg-bloom-bg px-2 py-0.5 rounded-md text-[11px]">
+              <i class="fa-solid fa-bolt text-bloom-yellow"></i> ${booth.power}
+            </span>
+            <span class="text-bloom-pink font-semibold hover:underline">マップ位置を見る →</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Select Booth & Update Sidebar
+    function selectBooth(id) {
+      selectedBoothId = id;
+      const booth = boothData.find(b => b.id === id);
+
+      // Highlight Pin
+      document.querySelectorAll('.booth-pin').forEach(pin => {
+        pin.classList.remove('active', 'bg-bloom-terracotta', 'ring-4', 'ring-bloom-pinkSoft');
+      });
+      const activePin = document.getElementById(`pin-${id}`);
+      if (activePin) {
+        activePin.classList.add('active', 'bg-bloom-terracotta', 'ring-4', 'ring-bloom-pinkSoft');
+      }
+
+      // Update Detail Sidebar
+      const detail = document.getElementById('detail-content');
+      detail.innerHTML = `
+        <div class="space-y-4 animate-fade-in">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-bloom-pink text-white mb-1">
+                ブース NO. ${booth.id}
+              </span>
+              <h3 class="text-xl font-extrabold text-bloom-text leading-tight">${booth.menu}</h3>
+              <p class="text-sm font-bold text-bloom-pink mt-1">${booth.name}</p>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-bloom-pinkSoft/60 text-bloom-pink flex items-center justify-center text-xl shrink-0">
+              <i class="fa-solid ${booth.icon}"></i>
+            </div>
+          </div>
+
+          <div class="space-y-2 bg-bloom-bg p-3.5 rounded-2xl border border-bloom-pinkSoft/40 text-xs">
+            <div class="flex items-center justify-between py-1 border-b border-gray-200/60">
+              <span class="text-bloom-textLight">出店日程</span>
+              <span class="font-bold text-bloom-text">${booth.day === '17' ? '10/17(土) 限定' : '10/17(土)・10/18(日) 両日'}</span>
+            </div>
+            <div class="flex items-center justify-between py-1 border-b border-gray-200/60">
+              <span class="text-bloom-textLight">電源設備</span>
+              <span class="font-bold text-bloom-terracotta flex items-center gap-1">
+                <i class="fa-solid fa-bolt"></i> ${booth.power}
+              </span>
+            </div>
+            ${booth.note ? `
+            <div class="flex items-center justify-between py-1 text-bloom-pink font-bold">
+              <span>備考</span>
+              <span>${booth.note}</span>
+            </div>` : ''}
+          </div>
+
+          <div class="bg-bloom-yellowSoft/50 p-3 rounded-2xl text-xs text-bloom-text space-y-1">
+            <div class="font-bold text-bloom-text flex items-center gap-1">
+              <i class="fa-solid fa-lightbulb text-bloom-yellow"></i> ピックアップ情報
+            </div>
+            <p class="text-bloom-textLight leading-relaxed">
+              ${booth.menu}をご用意してみなさまのお越しをお待ちしております！売り切れ次第終了となりますのでお早めにどうぞ♪
+            </p>
+          </div>
+        </div>
+      `;
+
+      renderCards();
+    }
+
+    // Filter Logic
+    function filterSchedule(type) {
+      currentScheduleFilter = type;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('bg-bloom-pink', 'text-white');
+        btn.classList.add('bg-white', 'text-bloom-text');
+      });
+      document.getElementById(`btn-${type}`).classList.add('bg-bloom-pink', 'text-white');
+      document.getElementById(`btn-${type}`).classList.remove('bg-white', 'text-bloom-text');
+      renderCards();
+    }
+
+    function filterCategory(cat) {
+      currentCategoryFilter = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.classList.remove('bg-bloom-text', 'text-white');
+        btn.classList.add('bg-bloom-bg', 'text-bloom-text');
+      });
+      event.target.classList.add('bg-bloom-text', 'text-white');
+      event.target.classList.remove('bg-bloom-bg', 'text-bloom-text');
+      renderCards();
+    }
+
+    function handleSearch() {
+      currentSearchText = document.getElementById('search-input').value;
+      renderCards();
+    }
+
+    // Initial Render
+    renderCards();
+  </script>
 </body>
 </html>
